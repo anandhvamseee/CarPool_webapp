@@ -1,0 +1,4 @@
+Django==4.0.2
+geopy==2.2.0
+googlemaps==4.6.0
+reverse_geocode==1.4.1
