@@ -1,0 +1,204 @@
+
+{% extends "cp/base.html" %}
+{% load static %}
+{% block content %}
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<!-- Bootstrap CSS -->  
+		<style type="text/css">
+			table.trips {
+				margin-top: 20px;
+			}
+
+			table.trips td {
+			    vertical-align: middle;
+			}
+
+			table.trips .departure { width: 150px; }
+			table.trips .riders { width: 50px; text-align: center; }
+			table.trips .action { width: 150px; text-align: center; }
+			table.trips .status { width: 120px; }
+
+			.column {
+			  float: left;
+			  width: 50%;
+			}
+
+			/* Clear floats after the columns */
+			a.profilel:visited {
+		  color: black;
+		  background-color: transparent;
+		  text-decoration: none;
+		}
+		a.profilel:hover{
+			color: green;
+		  background-color: transparent;
+		  text-decoration: underline;
+		}
+
+   
+		</style>
+		
+	</head>
+	<body>
+		<div id="content">
+      <script>
+        {% for msg in messages %}
+          swal('{{ msg }}');
+        {% endfor %}
+      </script>
+      
+  </div>
+		<div style="margin-top: 100px">
+		<link href="/css/trips.css" rel="stylesheet">
+		<secton id="admin">
+		<div class="container-fluid">
+		  <header id="admin-header-driving">
+		    <h2><strong>Driving</strong></h2>
+		    <p>Upcoming trips for which you are driving. Use this section to approve or deny ride requests, manage, and plan your trip details.</p>
+		  </header>
+		  <table class="table table-hover trips table-striped" id="trips-driving-table">
+		    <thead class="thead-dark">
+		      <tr>
+		        <th class="departure">Departure</th>
+		        <th class="origin">Origin</th>
+		        <th class="destination">Destination</th>
+		        <th class="passengers">Passesngers</th>
+		        <th class="requestedseatcount">Requested seats</th>
+		        <th class="action">Action</th>
+		      </tr>
+		    </thead>
+		    <tbody id="trips-driving">
+		    {% for i in driving %}
+		    	{% if i.ride_data.deleted == False %}
+			    	<tr>
+			        	<td class="Departure">{{ i.ride_data.date }}</td>
+			        	<td class="origin">{{ i.ride_data.from_location }}</td>
+			        	<td class="destination">{{ i.ride_data.to_location }}</td>
+			        	<td class="passengers">{{ i.from_user }}</td>
+			        	<td class="requestedseatcount">{{ i.spots }}</td>
+			        	<td class="action">
+			        		<div class="btn-group" role="group" aria-label="Basic example">
+							 <a href="{% url 'ACCEPT' i.id %}" class="btn btn-primary Request">Accept</a>
+							 <a href="{% url 'REJECT' i.id %}" class="btn btn-danger Request">Reject</a>
+							</div>
+			        	</td>
+			      	</tr>
+			      {% endif %}
+		      	{% empty %}
+			      		<tr>
+			      			<td colspan="5" align="center">There are no records to show.<a class="profilel" href="{% url 'PROFILE' %}"><strong>click here</strong></a> to find the trips you have shared</td>
+			      		</tr>
+		     {% endfor %}
+		    </tbody>
+		  </table>
+
+
+		  <header id="admin-header-riding">
+		    <h2><strong>Riding</strong></h2>
+		    <p>Upcoming trips for which you are riding with some else.</p>
+		  </header>
+		  <table class="table table-hover trips table-striped" id="trips-riding-table">
+		    <thead class="thead-dark">
+		      <tr>
+		        <th class="departure">Departure</th>
+		        <th class="origin">Origin</th>
+		        <th class="destination">Destination</th>
+		        <th class="requestedto">Requested To</th>
+		        <th class="Room Code">Code</th>
+		        <th class="status">Request Status</th>
+
+		      </tr>
+		    </thead>
+		    <tbody id="trips-riding">
+		    {% for j in riding %}
+		    <script type="text/javascript">
+		    	var j = '{{ j.id }}';
+		    	console.log("id", j);
+		    </script>
+		    	<tr>
+			      	<td class="departure">{{ j.ride_data.date }}</td>
+			      	<td class="origin">{{ j.ride_data.from_location }}</td>
+			      	<td class="destination">{{ j.ride_data.to_location }}</td>
+			      	{% if j.ride_data.deleted %}
+			      		<td class="requestedto">{{ j.to_user.username }}</td>
+			      		<td class="room_no">This code will be visible when the owner accepts your request</td>
+			      		<td class="status" style="background-color: #ff4d4d; border-radius:15px"><a class="profilel" href="{% url 'DELMSG' %}">Deleted!</a></td>
+			      	{% else %}
+				      	{% if j.visited %}
+					      	{% if j.ride_status %}
+					      	<td class="requestedto"><a class="profilel" href="{% url 'OPROFILE' j.to_user.id %}">{{ j.to_user.username }}</a></td>
+					      	<td class="room_no">{{ j.ride_data.room_no }}</td>
+					      	<td class="status" style="background-color: #53c68c; border-radius:15px"><a class="profilel" href="{% url 'APRMSG' %}">Approved!</a></td>
+					      	{% else %}
+					      	<td class="requestedto">{{ j.to_user.username }}</td>
+					      	<td class="room_no">This code will be visible when the owner accepts your request</td>
+					      	<td class="status" style="background-color: #ff4d4d; border-radius:15px"><a class="profilel" href="{% url 'DNDMSG' %}">Denied!</a></td>
+				      		{% endif %}
+				      	{% else %}
+				      		<td class="requestedto">{{ j.to_user.username }}</td>
+				      		<td class="room_no">This code will be visible when the owner accepts your request</td>
+				      		<td class="status" style="background-color: #ffc34d; border-radius:15px;"><a class="profilel" href="{% url 'PNGMSG' %}">Pending!</a></td>
+				      	{% endif %}
+				    {% endif %}
+		      	</tr>
+		      	{% empty %}
+			      		<tr>
+			      			<td colspan="4" align="center">There are no records to show.<a class="profilel" href="{% url 'SEARCH' %}">click here</a> to join any rides</td>
+			      		</tr>
+		     {% endfor %}
+		    </tbody>
+		  </table>
+		  <header id="admin-header-driving groups">
+		    <h2><strong>{{ request.user }}'s Trip Requests</strong></h2>
+		    <p>Upcoming trips for which you are driving. Use this section to know with whom you are travelling</p>
+		  </header>
+		  {% for k in driving_trips_objects %}
+			  <table class="table table-hover table-striped trips" id="trips-driving groups-table ">
+			  	<h2>Travelling from {{ k.from_location }} to {{ k.to_location }}</h2>
+			    <thead class="thead-dark">
+			      <tr>
+			        <th class="name">Name</th>
+			        <th class="mail">Mail</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			    	{% for l in driving_trips %}
+				    	{% if l.ride_data.id == k.id %}
+					    	<tr>
+					    		<td class="passenger">{{ l.from_user.username }}</td>
+					    		<td class="mail">{{ l.from_user.email }}</td>
+					    {% endif %}
+				    {% endfor %}
+							</tr>
+		    	</tbody>
+		    	{% empty %}
+			      		<tr>
+			      			<td>There are no upcoming trips for {{ request.user }}</td>
+			      		</tr>
+		    {% endfor %}
+
+  <script>
+	  $(".stars input").on('click', function(e){
+	  	var us = j;
+	  	console.log(us);
+	    let value = $(this).data('value');
+	    console.log(value);
+	    $.ajax({
+        url: '/rating',
+        type: 'POST',
+        data: {'stars': value},
+     })
+	  });
+	</script>
+		</body></html>
+	
+	
+	
+{% endblock content %}

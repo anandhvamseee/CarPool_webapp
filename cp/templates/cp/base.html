@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->  
+  <link rel="stylesheet" href="{% static 'cp/css/bootstrap.css' %}">
+  <link rel="stylesheet" href="{% static 'cp/css/all.min.css' %}">
+  <style type="text/css">
+  .hello-msg{
+    font-size: 18px;
+    color: #fff;
+    margin-right: 50px; 
+    }
+    .navbar-custom{
+      background-color: #010483;  
+    }
+    a{
+      color: #ffffff;
+    }
+    a:hover{
+      color: #cccccc;
+    }
+    .btn{
+      margin-left:20px;
+    }
+  </style>
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar navbar-expand-sm navbar-custom fixed-top ">
+    <a href="{% url 'LOGIN' %}" class="navbar-brand font-weight-bold">EasyRide</a>
+    <button class="navbar-toggler">
+      <span class="navbar-toggler-icon" data-toggle="collapse" data-target="#navbarmenu"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarmenu">
+      <ul class="navbar-nav mr-auto pr-5" >
+        <li class="nav-item pr-3">
+          <a href="{% url 'SEARCH' %}" class="nav-link">Search</a>
+        </li>
+        <li class="nav-item pr-3">
+          <a href="{% url 'SHARE' %}" class="nav-link">Share</a>
+        </li>
+        <li class="nav-item pr-3">
+          <a href="{% url 'TRIPS' %}" class="nav-link">Trips</a>
+        </li>
+        <li class="nav-item pr-3">
+          <a href="{% url 'home' %}" class="nav-link">Messages</a>
+        </li>
+      </ul>
+      <span class="hello-msg mr-3" style="color:#ffffff;">Hello,{{request.user}}</span>
+      <span><a class="hello-msg mr-3" href="{% url 'PROFILE' %}" style="color:ffffff;">Profile</a></span>
+      <span><a class="hello-msg mr-3" href="{% url 'LOGOUT' %}" style="color:ffffff;">Logout</a></span>
+    </div>
+     
+  </nav>
+  
+
+      {% block content %}{% endblock %}
+
+  <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="{% static 'cp/js/all.min.js' %}"></script>
+    <script src="{% static 'cp/js/popper.js' %}"></script>
+    <script src="{% static 'cp/js/bootstrap.js' %}"></script>
+    <script src="{% static 'cp/js/jquery.js' %}"></script>
+    
+</body>
+</html>

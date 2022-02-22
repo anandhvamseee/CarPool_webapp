@@ -1,0 +1,231 @@
+{% extends "cp/base.html" %}
+{% block content %}
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title></title>
+		<style type="text/css">
+			body{
+			    margin-top:20px;
+			    color: #1a202c;
+			    text-align: left;
+			    background-color: #e2e8f0;    
+			}
+			.main-body {
+				margin-top: 70px;
+			    padding: 30px;
+			}
+			.card {
+			    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+			}
+
+			.card {
+			    margin-top: 10px;
+			    display: block;
+			    flex-direction: column;
+			    min-width: 0;
+			    word-wrap: break-word;
+			    background-color: #fff;
+			    background-clip: border-box;
+			    border: 0 solid rgba(0,0,0,.125);
+			    border-radius: .25rem;
+			}
+
+			.card-body {
+			    flex: 1 1 auto;
+			    min-height: 1px;
+			    padding: 1rem;
+			}
+
+			.gutters-sm {
+			    margin-right: -8px;
+			    margin-left: -8px;
+			}
+
+			.gutters-sm>.col, .gutters-sm>[class*=col-] {
+			    padding-right: 8px;
+			    padding-left: 8px;
+			}
+			.mb-3, .my-3 {
+			    margin-bottom: 1rem!important;
+			}
+
+			.bg-gray-300 {
+			    background-color: #e2e8f0;
+			}
+			.h-100 {
+			    height: 100%!important;
+			}
+			.shadow-none {
+			    box-shadow: none!important;
+			}
+			table {
+		    border-collapse: separate;
+		    border-spacing: 0 1em;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container-fluid">
+	    <div class="main-body">
+	    
+	          <div class="row gutters-sm">
+	            <div class="col-md-4 mb-3">
+	              <div class="card">
+	                <div class="card-body">
+	                  <div class="d-flex flex-column align-items-center text-center">
+	                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
+	                    <div class="mt-3">
+	                      <h4>{{ usr_pro_ob.user.username }}</h4>
+	                      <p class="text-muted font-size-sm">{{ usr_pro_ob.address }}</p>
+	                    </div>
+	                  </div>
+	                </div>
+	              </div>
+	              <div class="card mt-3">
+	                <ul class="list-group list-group-flush">
+	                  
+	             
+	                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+	                    <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter mr-2 icon-inline text-info"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>Twitter</h6>
+	                    <span class="text-secondary">{{ usr_pro_ob.twitter }}</span>
+	                  </li>
+	                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+	                    <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram mr-2 icon-inline text-danger"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>Instagram</h6>
+	                    <span class="text-secondary">{{ usr_pro_ob.instagram }}</span>
+	                  </li>
+	                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+	                    <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook mr-2 icon-inline text-primary"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>Facebook</h6>
+	                    <span class="text-secondary">{{ usr_pro_ob.facebook }}</span>
+	                  </li>
+	                </ul>
+	              </div>
+	            </div>
+	           	<div class="col-lg-8">
+					<div class="card">
+						<form method="POST" action="{% url 'EDITPROFO' %}">
+							{% csrf_token %}
+						<div class="card-body">
+							<div class="row mb-3">
+								<div class="col-sm-3">
+									<h6 class="mb-0">Full Name</h6>
+								</div>
+								<div class="col-sm-9 text-secondary">
+									<input type="text" name="username" class="form-control" value={{ usr_pro_ob.user.username }}>
+								</div>
+							</div>
+							<div class="row mb-3">
+								<div class="col-sm-3">
+									<h6 class="mb-0">Email</h6>
+								</div>
+								<div class="col-sm-9 text-secondary">
+									<input type="email" name="email" class="form-control" value={{ usr_pro_ob.user.email }}>
+								</div>
+							</div>
+							<div class="row mb-3">
+								<div class="col-sm-3">
+									<h6 class="mb-0">Address</h6>
+								</div>
+								<div class="col-sm-9 text-secondary">
+									<input type="text" name="address" class="form-control" value={{ usr_pro_ob.address }}>
+								</div>
+							</div>
+							<div class="row mb-3">
+								<div class="col-sm-3">
+									<h6 class="mb-0">Instagram Id</h6>
+								</div>
+								<div class="col-sm-9 text-secondary">
+									<input type="text" name="instagram" class="form-control" value={{ usr_pro_ob.instagram }}>
+								</div>
+							</div>
+							<div class="row mb-3">
+								<div class="col-sm-3">
+									<h6 class="mb-0">Facebook Id</h6>
+								</div>
+								<div class="col-sm-9 text-secondary">
+									<input type="text" name="facebook" class="form-control" value={{ usr_pro_ob.facebook }}>
+								</div>
+							</div>
+							<div class="row mb-3">
+								<div class="col-sm-3">
+									<h6 class="mb-0">Twitter Id</h6>
+								</div>
+								<div class="col-sm-9 text-secondary">
+									<input type="text" name="twitter" class="form-control" value={{ usr_pro_ob.twitter }}>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-3"></div>
+								<div class="col-sm-9 text-secondary">
+									<div class="sub"><button type="submit" class="btn btn-primary search-button" >Save Changes</button></div>
+								</div>
+							</div>
+						</form>
+						</div>
+					</div>
+
+	              <div class="row gutters-sm">
+	                <div class="col-sm-6 mb-3">
+	                  <div class="card h-100">
+	                    <div class="card-body">
+	                      <h6 class="col-8"><i class="material-icons text-info mr-2">My Trips</i></h6>
+	                      <table>
+	                    	{% for i in driving %}
+	                    		{% if not i.deleted %}
+	                    		<tr>
+		                    		<td><h6>{{ i.from_location }}&nbsp;&nbsp;&nbsp;</h6></td> 
+		                    		<td><h6>To</h6></td>
+		                    		<td><h6>&nbsp;&nbsp;&nbsp;{{ i.to_location }}&nbsp;&nbsp;&nbsp;</h6></td>
+		                    		<td><a href="{% url 'DELTRP' i.id %}" class="btn btn-danger">Delete</a></td>
+		                    	</tr>
+	                    		{% endif %}
+	                    	{% endfor %}
+	                    </table>
+	                    </div>
+	                  </div>
+	                </div>
+	                <div class="col-sm-6 mb-3">
+	                  <div class="card h-100">
+	                    <div class="card-body">
+	                      <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">Vehicle</i>Details</h6>
+	                      <div class="box-header with-border">
+						    <h3 class="box-title">Driver Information</h3>
+						    <br>
+						</div>
+						<div class="box-body">
+						    <form name="driver-profile" method="POST" action="{% url 'DRIVDET' %}">
+						    	{% csrf_token %}
+						        <input type="hidden" name="csrfmiddlewaretoken" value="BixfqpcFoaffibQgksovCjL4MJn9RNCa">
+						        <div class="form-group has-info">
+						            <label class="control-label" for="inputname"><i class="fa fa-certificate"></i>
+						                Driver's Liscence Number
+						            </label>
+						            <input type="text" name="number" class="form-control" id="inputname" value="">
+						        </div>
+
+						        <div class="form-group has-info">
+						            <label class="control-label" for="inputsname"><i class="fa fa-file-picture-o"></i>
+						                Picture of Driver's Liscence
+						            </label>
+						            <input type="file" class="form-control" name="picture" id="inputsname" accept="image/jpeg">
+						        <span class="help-block">This can be scanned or a snapshot
+						            
+						            </span>
+						        </div>
+
+						        <button type="submit" class="btn btn-primary">Update</button>
+						    </form>
+
+</div>
+	              </div>
+
+
+
+	            </div>
+	          </div>
+
+	        </div>
+	    </div>
+	</body>
+	</html>
+{% endblock content %}

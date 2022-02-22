@@ -1,0 +1,395 @@
+
+{% extends "cp/base.html" %}
+
+{% block content %}
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <title>Display driving directions</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.3/mapbox-gl-directions.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.3/mapbox-gl-directions.css' type='text/css' />
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaaURpmG729XBqeASRVkQsbbUA9S5QAmE&libraries=places"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'cp/css/search.css' %}">
+    <script type="text/javascript">
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementsByName("date")[0].setAttribute('min', today);
+      </script>
+    <style type="text/css">
+
+      body{
+        position: absolute;
+        margin-top: 1000px;
+      }
+      #myform {
+      text-align: center;
+      padding: 5px;
+      border: 1px dotted #ccc;
+      margin: 2%;
+      }
+      .qty {
+          width: 40px;
+          height: 25px;
+          text-align: center;
+      }
+      .form-box{
+        margin-top:50px;
+        margin-left: 30px;
+        height: auto;
+        width:394px;
+        border-style: solid;
+        padding: 30px;
+        padding-left: 15px;
+        padding-right: 100px;
+        border-radius: 10px;
+        background: #e6e6e6;
+        border-color: #d9d9d9;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+          -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+          -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+          border-radius: 10px;
+      }
+      .props{
+        margin: 20px;
+      }
+      .sub{
+        width: 100px;
+        margin-left:120px;
+        margin-top:25px;
+      }
+      .hello{
+          margin-top: 50px;
+          margin-left: 15px;
+          padding-left: 15px;
+          width: 394px;
+          border-style: solid;
+          background-color: #F4F7F8;
+          border-radius: 10px;
+          border-color: #d9d9d9;
+          height: 400px;
+          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            border-radius: 10px;
+          overflow: scroll;
+        }
+        body { margin-top:50px; 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 270%; margin-left: 550px;margin-top: 50px;height: 100%; border-radius: 10px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                border-radius: 10px;}
+        .collapsible {
+          color: #0066ff;
+          cursor: pointer;
+          padding: 18px;
+          text-align: left;
+          font-size: 15px;
+          border-style: solid;
+          background: #e6e6e6;
+          border-color: #d9d9d9;
+          border-radius: 5px;
+          width: 300px;
+        }
+
+        .content {
+          padding: 0 18px;
+          display: none;
+          overflow: hidden;
+          border-style: solid;
+          border-color: #d9d9d9;
+          width: 300px;
+        }
+        .innerresults{
+          margin-left: 15px;
+        }
+        .btn{
+          margin-left: 148px;
+          margin-bottom: 10px;
+        }
+
+    </style>
+  </head>
+  <body>
+
+    <div id="content">
+      <script>
+        {% for msg in messages %}
+          swal('{{ msg }}');
+        {% endfor %}
+      </script>
+      
+    </div>
+    <form method="POST" action="{% url 'SEARCHRES' %}">
+      {% csrf_token %}
+         <h1> Search</h1>
+        
+        <fieldset>
+        
+          <label for="from">From location:</label>
+          <input type="text" id="from" name="from_location" required>
+        
+          <label for="to">To Location:</label>
+          <input type="text" id="To" name="to_location" required>
+       
+          <label for="Date">Date:</label>
+          <input type="date" id="date" name="date">
+          {% if gender == 'female' %}
+            <input type="checkbox" id="development" value="interest_development" name="women_only">
+            <label class="light" for="development">Women Only</label><br>
+          {% endif %}
+
+          <label for="spots">Spots in the car:</label>
+          <input type="number" id="from" name="spots_in_the_car" required>
+          
+          <label>Vehicle Type:</label>
+          <select name='type'>
+            <option selected>Open this select menu</option>
+            <option value="1">Car</option>
+            <option value="2">Bike</option>
+            <option value="3">Van</option>
+          </select>
+        </fieldset>
+       
+        <button type="submit">Search</button>
+    </form>
+    <div class="container">
+      <div class="hello">
+        <div class="card-body" > <h3><strong>Search Results</strong></h3></div>
+        {% if search_results_list %}
+          {% for i in search_results_list %}
+            <button type="button" class="collapsible">
+            <h6><i class="fas fa-map-marked-alt"></i> <strong>From</strong>: {{ i.from_location }}</h6>
+            <h6><i class="fas fa-map-marked-alt"></i> <strong>To</strong> :{{ i.to_location }}</h6>
+            <h6><i class="fas fa-calendar-day"></i> <strong>Date</strong> :{{ i.date }}</h6>
+            <h6><i class="fas fa-car"></i> <strong>Vehicle Type</strong> :{{ i.vehicle_type }}</h6>
+            </button>
+            <div class="content">
+              {% if request.user == i.username %}
+                <h6><i class="fas fa-user"></i> <strong>User</strong> :{{ i.username }}</h6>
+              {% else %}
+                <h6><i class="fas fa-user"></i> <strong>User</strong> :{{ i.username }}</h6>
+              {% endif %}
+              <h6><i class="fas fa-clock"></i> <strong>Time</strong> :{{ i.time }}</h6>
+              <h6><i class="fas fa-car"></i> <strong>Spots in the car</strong> :{{ i.spots_in_the_car }}</h6>
+              <h6><i class="fas fa-rupee-sign"></i> <strong>Fare</strong> :{{ i.fare }}</h6>
+              <h6><i class="fas fa-car"></i> <strong>Vehicle Name</strong> :{{ i.vehicle_info }}</h6>
+              <h6><i class="fas fa-car"></i> <strong>Rating</strong> :{{ i.user_profile.rating }}</h6>
+              <a href="{% url 'REQRID' i.username i.id  spots %}" class="btn btn-primary Request">Request Ride</a>
+            </div>
+            {% empty %}
+                <p style="margin-left: 35px;"><i class="fas fa-exclamation-triangle"></i>   Sorry, no trips available in this route.
+                </p>
+          {% endfor %}
+        {% else %}
+          {% for i in final_inter_list %}
+            <button type="button" class="collapsible">
+            <h6><i class="fas fa-map-marked-alt"></i> <strong>From</strong>: {{ i.from_location }}</h6>
+            <h6><i class="fas fa-map-marked-alt"></i> <strong>To</strong> :{{ i.to_location }}</h6>
+            <h6><i class="fas fa-calendar-day"></i> <strong>Date</strong> :{{ i.date }}</h6>
+            <h6><i class="fas fa-car"></i> <strong>Vehicle Type</strong> :{{ i.vehicle_type }}</h6>
+            </button>
+            <div class="content">
+               {% if request.user == i.username %}
+                <h6><i class="fas fa-user"></i> <strong>User</strong> :{{ i.username }}</h6>
+              {% else %}
+                <h6><i class="fas fa-user"></i> <strong>User</strong> :{{ i.username }}</h6>
+              {% endif %}
+              <h6><i class="fas fa-clock"></i> <strong>Time</strong> :{{ i.time }}</h6>
+              <h6><i class="fas fa-car"></i> <strong>Spots in the car</strong> :{{ i.spots_in_the_car }}</h6>
+              <h6><i class="fas fa-rupee-sign"></i> <strong>Fare</strong> :{{ i.fare }}</h6>
+              <h6><i class="fas fa-car"></i> <strong>Vehicle Name</strong> :{{ i.vehicle_info }}</h6>
+              <h6><i class="fas fa-car"></i> <strong>Rating</strong> :{{ i.user_profile.rating }}</h6>
+              <a href="{% url 'REQRID' i.username i.id  spots %}" class="btn btn-primary Request">Request Ride</a>
+            </div>
+            {% empty %}
+                <p style="margin-left: 35px;"><i class="fas fa-exclamation-triangle"></i>   Sorry, no trips available in this route.
+                </p>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <script>
+      var coll = document.getElementsByClassName("collapsible");
+      var i;
+
+      for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+          this.classList.toggle("active");
+          var content = this.nextElementSibling;
+          if (content.style.display === "block") {
+            content.style.display = "none";
+          } else {
+            content.style.display = "block";
+          }
+        });
+      }
+    </script>
+    <script type="text/javascript">
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementsByName("date")[0].setAttribute('min', today);
+      </script>
+    <div id="map" style="width: 300%; height: 830px;"></div>
+     <script type="text/javascript">
+     mapboxgl.accessToken = 'pk.eyJ1IjoiYWFhYmJtbm5uIiwiYSI6ImNrb2E3Y3g3MzB5bGoydXMyd3E0MmVka3QifQ.KCEZL5xcQz-pkIGqXs26Lg';
+     var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v9',
+        center: [78.48662,17.3464],
+        zoom: 3
+      });
+     map.addControl(
+         new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true
+         })
+     );
+     
+      map.addControl(new mapboxgl.NavigationControl());
+      map.addControl(new mapboxgl.FullscreenControl());
+      map.on('load', function() {
+        var directions = new MapboxDirections({
+          accessToken: mapboxgl.accessToken
+        });
+        map.addControl(directions, 'top-left');
+
+        directions.setOrigin('{{ from_loc }}');
+        directions.setDestination('{{ to_loc }}');
+      });
+
+    </script>
+      <div id="status"></div>
+  <div id="gmap"></div>
+     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaaURpmG729XBqeASRVkQsbbUA9S5QAmE&libraries=places"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+    <script>
+      var to = '{{ to_loc }}';
+      console.log(to);
+      var x;
+      var result = new Array();
+      var l = {{ lat_lng }};
+      console.log(l);
+      var directionsRenderer;
+      var directionsService;
+      var a = {{ to_loc_latlng }};
+      var a1 = a[0];
+      var a2 = a[1];
+      console.log(a1,a2);
+          for (let i = 0; i < l.length; i++) {
+            var addresses = [
+              [
+                [43.674687, -79.430955],
+                [43.668560, -79.394924]
+              ],
+              [
+                [43.674934, -79.426182],
+                [a1,a2],
+              ],
+              [
+                [43.640381, -79.394508],
+                [43.640575, -79.394586]
+              ]
+            ];
+
+        
+            directionsRenderer = new google.maps.DirectionsRenderer(); 
+            directionsService = new google.maps.DirectionsService();
+            var map = new google.maps.Map(document.getElementById("gmap"), {
+              zoom: 10,
+              center: {
+                lat: 41.85,
+                lng: -87.65
+              }
+            });
+
+            directionsRenderer.setMap(map);
+
+            var start = new google.maps.LatLng(l[i][1], l[i][2]);
+            //console.log(start);
+            var end = new google.maps.LatLng(l[i][3], l[i][4]);
+            //console.log(end);
+
+            directionsService.route({
+                origin: start,
+                destination: end,
+                travelMode: "DRIVING"
+              },
+              function(response, status) {
+                if (status === "OK") {
+                  directionsRenderer.setDirections(response);
+                  var paths = response.routes[0].overview_path;
+                  var polyline = new google.maps.Polyline({
+                    path: paths,
+                    map: map
+                  });
+                  var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(addresses[1][1][0], addresses[1][1][1]),
+                    map: map,
+                    title: "1",
+                    icon: {
+                      url: "https://maps.gstatic.com/intl/en_us/mapfiles/markers2/measle.png",
+                      size: new google.maps.Size(7, 7),
+                      anchor: new google.maps.Point(3.5, 3.5)
+                    }
+                  })
+                  if (google.maps.geometry.poly.isLocationOnEdge(new google.maps.LatLng(addresses[1][1][0], addresses[1][1][1]), polyline, 0.10)) {
+                    document.getElementById('status').innerHTML = "Working";
+                    x=1;
+                    result.push(l[i][0]);
+                    var d = new Date();
+                    console.log(i, 'working', d.getTime());
+
+                  } else {
+                    document.getElementById('status').innerHTML = "not working";
+                    x=0;
+                    console.log(i,'not working');
+
+                    //cosole.log(0)
+                  }
+
+                  var d = new Date();
+                  console.log(result, d.getTime());
+                  $.ajax({
+                      type: 'POST',
+                      url: '/edit_list',
+                      data: {'result[]': result, 'to': to},
+                  });
+                } else {
+                  window.alert("Directions request failed due to " + status);
+                }
+
+              }
+
+            );
+            
+            
+        }
+
+
+    </script>
+
+  </body>
+  </html>
+
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+
